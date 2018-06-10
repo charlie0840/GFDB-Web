@@ -1,4 +1,5 @@
 ﻿$(document).ready(function () {
+    game.init();
     i18next
         .use(i18nextBrowserLanguageDetector)
         .use(i18nextXHRBackend)
@@ -27,10 +28,12 @@
     i18next.on('languageChanged', function (lng) {
         $("#language").val(lng);
     });
+    //game.init();
 });
 
-var setup_done = false;
 function setup_page() {
+    var setup_done = false;
+
     var map_tbl_sort = new Tablesort(document.getElementById("map_table"));
     var team_tbl_sort = new Tablesort(document.getElementById("team_table"));
 
@@ -62,7 +65,8 @@ function setup_page() {
             ally_team_info = data;
         })
     ).then(function () {
-        map.init(mission_info, spot_info, enemy_team_info, enemy_character_type_info, gun_info, ally_team_info);
+        //gai
+        //map.init(mission_info, spot_info, enemy_team_info, enemy_character_type_info, gun_info, ally_team_info);
 
         $.each(campaign_info, function (id, campaign) {
             var type_text;
@@ -145,15 +149,14 @@ function setup_page() {
                 $(this).addClass("table-success");
                 var enemy_team_id = $("[data-team_id]", this).html();
                 if ($("#team_select").val() != enemy_team_id) {
-                    //map.selectAllEnemy(enemy_team_id); currently has a racing bug
                     $("#team_select").val(enemy_team_id).change();
                 }
             });
 
             if ($("#auto_generate_map_btn").hasClass("active")) {
-                map.generate();
+                //map.generate();
             } else {
-                map.remove();
+                //map.remove();
             }
 
             if (setup_done)
@@ -188,7 +191,7 @@ function setup_page() {
         });
 
         $("#generate_map_btn").click(function () {
-            map.generate();
+           // map.generate();
         });
 
         $("#auto_generate_map_btn").click(function () {
@@ -200,11 +203,7 @@ function setup_page() {
         });
 
         $("#download_map_btn").click(function () {
-            map.download();
-        });
-
-        $("#download_full_map_btn").click(function () {
-            map.downloadFullMap();
+            //map.download();
         });
 
         var storage_val = localStorage.getItem("auto_generate_map") === "true";
@@ -228,9 +227,164 @@ function setup_page() {
             $("#map_table tbody tr").first().click();
         }
 
-        setup_done = true;
+        var setup_done = true;
     });
+
+    //game canvas
+
 }
+
+var game = {
+    init : function(){
+        game.background = ["Airport", "Bridge", "Forest", "IceLake", "Snow", "Street"];
+        gameCanvas.init();
+        //gameCanvas.selectBackground.val('Airport').change();
+    },
+  
+    setgameCanvasHandler : function(handler){
+        //gameCanvas.handler = handler;
+    }
+};
+
+
+var gameCanvas = {
+    role : [],
+    enemyRole : [],
+    grid : [],
+    bgImage : [],
+    handler : null,
+    init : function(){
+        gameCanvas.canvas = $('.gameCanvast');
+        gameCanvas.selectBackground = $(".gameSelectBackground > select");
+        gameCanvas.showFPS = $(".gameShowFPS > input");
+        gameCanvas.addGrid = $(".addGrid");
+        gameCanvas.hasGrid = false;
+        gameCanvas.isShowFPS = true;
+        
+        var stringBackground = "<option>Empty</option>";
+        for(var i = 0; i < game.background.length; i++) {
+            stringBackground+= "<option>" + game.background[i] + "</option>";
+        }
+        gameCanvas.selectBackground.html(stringBackground);
+
+        gameCanvas.selectBackground.change(function() {
+            gameCanvas.changeBackground(this.selectedIndex);
+        });
+
+        gameCanvas.showFPS.change(function(){
+            gameCanvas.isShowFPS = this.checked;
+        });
+
+        gameCanvas.addGrid.click(function(){
+  
+            if(gameCanvas.hasGrid) {
+                gameCanvas.addGrid.html("添加网格");
+                gameCanvas.hasGrid = false;
+                for(var i = 0; i < gameCanvas.grid.length; i++) {
+                    gameCanvas.stage.removeChild(gameCanvas.grid[i]);
+                }
+                gameCanvas.grid.splice(0, gameCanvas.grid.length - 1);
+      
+            }
+            else {
+                gameCanvas.addGrid.html("移除网格");
+                gameCanvas.hasGrid = true;
+      
+                class Line extends PIXI.Graphics {
+                    constructor(points) {
+                        super();
+                        this.lineStyle(8, 0x000000);
+                        this.moveTo(points[0], points[1]);
+                        this.lineTo(points[2], points[3]);
+                    }
+                }
+                var line1 = new Line([105, 90, 1815, 90]);
+                var line2 = new Line([105, 1000, 1815, 990]);
+                var line3 = new Line([105, 90, 105, 990]);
+                var line4 = new Line([1815, 90, 1815, 990]);
+                var line5 = new Line([390, 90, 390, 990]);
+                var line6 = new Line([675, 90, 675, 990]);
+                var line7 = new Line([960, 90, 960, 990]);
+                var line8 = new Line([1245, 90, 1245, 990]);
+                var line9 = new Line([1530, 90, 1530, 990]);
+                var line10 = new Line([105, 390, 1815, 390]);
+                var line11 = new Line([105, 690, 1815, 690]);
+      
+                gameCanvas.stage.addChild(line1);
+                gameCanvas.stage.addChild(line2);
+                gameCanvas.stage.addChild(line3);
+                gameCanvas.stage.addChild(line4);
+                gameCanvas.stage.addChild(line5);
+                gameCanvas.stage.addChild(line6);
+                gameCanvas.stage.addChild(line7);
+                gameCanvas.stage.addChild(line8);
+                gameCanvas.stage.addChild(line9);
+                gameCanvas.stage.addChild(line10);
+                gameCanvas.stage.addChild(line11);
+                gameCanvas.grid.push(line1);
+                gameCanvas.grid.push(line2);
+                gameCanvas.grid.push(line3);
+                gameCanvas.grid.push(line4);        
+                gameCanvas.grid.push(line5);
+                gameCanvas.grid.push(line6);
+                gameCanvas.grid.push(line7);
+                gameCanvas.grid.push(line8);        
+                gameCanvas.grid.push(line9);
+                gameCanvas.grid.push(line10);
+                gameCanvas.grid.push(line11);
+            }     
+        });
+        
+        gameCanvas.stage = new PIXI.Container;
+        gameCanvas.renderer = PIXI.autoDetectRenderer(1920, 1080, { transparent : true });
+        gameCanvas.background = new PIXI.Sprite(PIXI.Texture.EMPTY);
+        gameCanvas.stage.addChild(gameCanvas.background);
+        gameCanvas.lastTime = new Date().getTime();
+        gameCanvas.nowTmie = new Date().getTime();
+        gameCanvas.fpsText = new PIXI.Text("0", { fill : "#ffffff"});
+        gameCanvas.fpsText.x = 1;
+        gameCanvas.fpsText.y = 0;
+        gameCanvas.stage.addChild(gameCanvas.fpsText);
+        gameCanvas.animationFrame = window.requestAnimationFrame(gameCanvas.animate);
+        gameCanvas.canvas.html(gameCanvas.renderer.view);
+    },
+
+    animate : function() {
+        gameCanvas.lastTime = gameCanvas.nowTime;
+        gameCanvas.nowTime = new Date().getTime();
+        gameCanvas.animationFrame = window.requestAnimationFrame(gameCanvas.animate);
+        if(gameCanvas.isShowFPS)
+            gameCanvas.fpsText.text = Math.floor(1000 / (gameCanvas.nowTime - gameCanvas.lastTime));
+        else
+            gameCanvas.fpsText.text = "";
+        gameCanvas.renderer.render(gameCanvas.stage);
+    },
+
+    changeBackground : function(n){
+        if (n == 0 && gameCanvas.background) {
+          gameCanvas.background.texture = PIXI.Texture.EMPTY;
+          gameCanvas.background.filename = '空';
+          return;
+        }
+        if (gameCanvas.bgImage[n-1]) {
+          gameCanvas.background.texture = gameCanvas.bgImage[n-1];
+          gameCanvas.background.filename = game.background[n-1];
+          gameCanvas.background.scale.x = gameCanvas.renderer.width / gameCanvas.bgImage[n-1].width;
+          gameCanvas.background.scale.y = gameCanvas.renderer.height / gameCanvas.bgImage[n-1].height;
+        } else {
+          var name = "bg" + game.background[n-1];
+          var path = "background/" + game.background[n-1] + ".jpg"
+          PIXI.loader.add(name, path).load(function(loader, resources){
+            gameCanvas.bgImage[n - 1] = resources[name].texture;
+            gameCanvas.background.filename = game.background[n-1];
+            gameCanvas.background.texture = gameCanvas.bgImage[n - 1];
+            gameCanvas.background.scale.x = gameCanvas.renderer.width / gameCanvas.bgImage[n-1].width;
+            gameCanvas.background.scale.y = gameCanvas.renderer.height / gameCanvas.bgImage[n-1].height;
+          });
+        }
+      },
+
+};
 
 function loadStorageItem(itemName, defaultValue) {
     var storage_val = localStorage.getItem(itemName);
