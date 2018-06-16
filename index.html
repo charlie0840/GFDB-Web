@@ -17,6 +17,12 @@
     <script src="js/utils.js"></script>
     <script src="js/map.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/spine-data.js"></script>
+    <script src="js/pixi/pixi.js"></script>
+    <script src="js/pixi/pixi-spine.js"></script> 
+    <script src="js/girlsData.js"></script>
+    <script src="js/girlsData-plus.js"></script>
+    <script src="js/game-plus.js"></script>
 </head>
 <body>
     <div class="container">
@@ -34,19 +40,38 @@
         <div>
             <canvas id="map_canvas_fg" width="0" height="0"></canvas>
             <canvas id="map_canvas_bg" width="0" height="0"></canvas>
-            <canvas id="map_canvas_tmp" width="0" height="0"></canvas>
         </div>
+
+       
         <div>
             <div class="btn-group" role="group">
-                <button type="button" id="auto_generate_map_btn" class="btn btn-primary" data-i18n="mission_map.auto_generate"></button>
-                <button type="button" id="generate_map_btn" class="btn btn-primary" data-i18n="mission_map.generate"></button>
+                <button type="button" id="auto_generate_map_btn" class="btn btn-primary" data-i18n="mission_map.auto_generate">Auto</button>
+                <button type="button" id="generate_map_btn" class="btn btn-primary" data-i18n="mission_map.generate">Generate</button>
             </div>
-            <button type="button" id="download_map_btn" class="btn btn-primary" data-i18n="mission_map.download"></button>
-            <button type="button" id="download_full_map_btn" class="btn btn-primary" data-i18n="mission_map.download_full"></button>
+            <button type="button" id="download_map_btn" class="btn btn-primary" data-i18n="mission_map.download">Download</button>
+            <span class="" data-i18n="mission_map.description"></span>
+        </div> 
+        
+        <!--this is the game canvas-->
+        <div class="debug debugPannel">
+            <span>Enemy Count: </span>
+            <input type="text" id="debug" value="0">
         </div>
-        <div>
-            &nbsp;&nbsp;&nbsp;&nbsp;&uarr;&nbsp;&nbsp;<span class="" data-i18n="mission_map.description"></span>
+        <div class="gameSelectBackground form-group">
+
+            <span>背景：</span>
+            <select class="form-control input-sm"></select>
         </div>
+        <div class="gameShowFPS canvasFps">
+            <input type="checkbox" checked="checked" /> FPS
+        </div>
+        <div class="gameCanvast Canvas"></div>
+        <button type="button" class="btn btn-primary btn-md addGrid">添加网格</button>
+        <button type="button" class="btn btn-primary btn-md addCharacter">添加角色</button>
+        <input type="range" id="timeRange" min="0" max="100" value="0" onchange="rangevalueT.value=value" />
+        <output id="rangevalueT">0</output>
+        
+        
         <div>
             <table id="map_table" class="table">
                 <thead>

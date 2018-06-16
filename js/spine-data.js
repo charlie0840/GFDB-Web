@@ -718,9 +718,17 @@ function Girls(basePath){
 Girls.prototype = {
     spineData : {},
     loadCache : {},
+    //modified, gameCanvas as view v
     load : function(name, skin, v){
-        if(!girlsData[name] || !girlsData[name][skin])
+        //this.loader.reset();
+
+        console.log("loading " + name);
+        if(!girlsData[name] || !girlsData[name][skin]){
+            console.log(name + " err " + skin);
+
             return ;
+        }
+
         if(!this.spineData[name] || !this.spineData[name][skin]){
             var girlSkin = girlsData[name][skin];
             var baseName = name + "-" + skin;
@@ -745,31 +753,13 @@ Girls.prototype = {
             }else{
                 jsonpath = name + "/" + girlSkin["json"];
                 this.loader.add(baseName + "-json", jsonpath, { "metadata" : { "type" : "text", "name" : name, "skin" : skin } });
-            }
+            }            
             this.loader.add(baseName + "-atlas", atlaspath, { "metadata" : { "type" : "atlas" } });
             this.loader.add(baseName + "-png", pngpath, { "metadata" : { "type" : "png" } });
             this.loader.load((loader, resources) => {
                 var rawSkeletonData, rawAtlasData, rawPngData;
-                // for(n in resources){
-                //     switch(resources[n].metadata.type){
-                //     case "skel":
-                //         var skel = new SkeletonBinary();
-                //         name = resources[n].metadata.name;
-                //         skin = resources[n].metadata.skin;
-                //         skel.data = new Uint8Array(resources[n].data);
-                //         skel.initJson();
-                //         rawSkeletonData = skel.json;
-                //         break;
-                //     case "atlas":
-                //         rawAtlasData = resources[n].data;
-                //         break;
-                //     case "png":
-                //         rawPngData = resources[n].data;
-                //         break;
-                //     }
-                // }
-
                 var skel = new SkeletonBinary();
+
                 if($.isEmptyObject(resources[loader.next + "-json"])){
                     name = resources[loader.next + "-skel"].metadata.name;
                     skin = resources[loader.next + "-skel"].metadata.skin;
@@ -796,10 +786,16 @@ Girls.prototype = {
                 this.spineData[name] = this.spineData[name] || {};
                 this.spineData[name][skin] = skeletonData;
 
-                loader.view.changeCanvas(skeletonData);
+                //this is used to load preview, not used
+                console.log("run here if " + skeletonData.name);
+                v.changeCharacter(skeletonData);
             });
+            console.log("building new " + name);
+
         }else{
-            v.changeCanvas(this.spineData[name][skin]);
+            //this is used to load preview, not used
+            console.log("run here else " + name);
+            v.changeCharacter(this.spineData[name][skin]);
         }
     },
     loadAsync : function(name, skin, v){
@@ -813,6 +809,7 @@ Girls.prototype = {
         this.loadCache[name] = this.loadCache[name] || {};
         this.loadCache[name][skin] = true;
         if(!this.spineData[name] || !this.spineData[name][skin]){
+            console.log("building new async " + name);
             var girlSkin = girlsData[name][skin];
             var baseName = name + "-" + skin;
             var skelpath = name + "/" + skin + ".skel";
@@ -843,19 +840,23 @@ Girls.prototype = {
                 console.log('loading...');
             });
         }else{
+            console.log("ELSE ALREADY LOADED");
             v.loadToStage(this.spineData[name][skin]);
         }
     },
 
     loadAll : function(defaultStageData){
+        console.log("load to stage");
+
         this.loader.load((loader, resources) => {
+
             var rawSkeletonData, rawAtlasData, rawPngData;
 
             for (i in defaultStageData) {
 
               var role = defaultStageData[i];
               var resName = role.name + "-" + role.skin;
-
+              console.log(resName + " being loaded");
               var skel = new SkeletonBinary();
                 if($.isEmptyObject(resources[resName + "-json"])){
                     name = resources[resName + "-skel"].metadata.name;
@@ -868,15 +869,14 @@ Girls.prototype = {
                     skin = resources[resName + "-json"].metadata.skin;
                     rawSkeletonData = JSON.parse(resources[resName + "-json"].data);
                 }
-
               rawAtlasData = resources[resName + "-atlas"].data;
               rawPngData = resources[resName + "-png"].data;
 
               var spineAtlas = new PIXI.spine.SpineRuntime.Atlas(rawAtlasData, function(line, callback, pngData = rawPngData) {
                   callback(new PIXI.BaseTexture(pngData));
-              });
+              }); 
               var spineAtlasParser = new PIXI.spine.SpineRuntime.AtlasAttachmentParser(spineAtlas);
-              var spineJsonParser = new PIXI.spine.SpineRuntime.SkeletonJsonParser(spineAtlasParser);
+              var spineJsonParser = new PIXI.spine.SpineRuntime.SkeletonJsonParser(spineAtlasParser)
               var skeletonData = spineJsonParser.readSkeletonData(rawSkeletonData, role.skin);
 //              skeletonData.code = role.name;
 //              skeletonData.skin = role.skin;
@@ -887,12 +887,10 @@ Girls.prototype = {
 
               this.spineData[name] = this.spineData[name] || {};
               this.spineData[name][skin] = skeletonData;
-
-              //console.log(this.spineData);
-              //console.log(skeletonData.name);
-            }
+            }           
+            console.log("call loadToStage");
             loader.view.loadToStage(defaultStageData, this.spineData);
-
+            loader.reset();
         });
     }
 }
