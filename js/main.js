@@ -313,10 +313,9 @@ var gameCanvas = {
         gameCanvas.addGrid = $(".addGrid");
         gameCanvas.addCharacters = $(".addCharacter");
         gameCanvas.hasGrid = false;
+        gameCanvas.isUpdate = true;
         gameCanvas.hasCharacter = false;
         gameCanvas.isShowFPS = true;
-
-
 
         var stringBackground = "<option>Empty</option>";
         for (var i = 0; i < game.background.length; i++) {
@@ -449,6 +448,22 @@ var gameCanvas = {
         gameCanvas.canvas.html(gameCanvas.renderer.view);
     },
 
+    animate : function() {
+        gameCanvas.lastTime = gameCanvas.nowTime;
+        gameCanvas.nowTime = new Date().getTime();
+        gameCanvas.animationFrame = window.requestAnimationFrame(gameCanvas.animate);
+        if(gameCanvas.isShowFPS)
+            gameCanvas.fpsText.text = Math.floor(1000 / (gameCanvas.nowTime - gameCanvas.lastTime));
+        else
+            gameCanvas.fpsText.text = "";
+        if(gameCanvas.isUpdate) {
+            for(var i = 0; i < gameCanvas.characters.length; i++) {
+                gameCanvas.characters[i].update( (gameCanvas.nowTime - gameCanvas.lastTime) / 1000);
+            }
+        }
+        gameCanvas.renderer.render(gameCanvas.stage);
+    },
+
     loadToStage : function(defaultStageData, spineData){
         console.log("add to stage by calling addRole");
 
@@ -460,7 +475,9 @@ var gameCanvas = {
                 spine.x = role.x * 110;
                 spine.y = 200 + role.y * 80;
                 spine.scale = 1200;
-            gameCanvas.addRole(spine);
+                spine.animation = "wait";
+            //gameCanvas.characters[gameCanvas.characters.length] = spine;
+            gameCanvas.addRole(spine, spine.animation);
         }
     },
 
@@ -468,7 +485,7 @@ var gameCanvas = {
         game.girls.loadAsync(currRoleData.name, currRoleData.name, gameCanvas);
     },
 
-    addRole: function (skeletonData) {
+    addRole: function (skeletonData, animation) {
         var len = gameCanvas.characters.length;
         var role = gameCanvas.characters[len] = new PIXI.spine.Spine(skeletonData);
         //var name = skeletonData.name + " " + gameCanvas.characters.length;
@@ -478,10 +495,13 @@ var gameCanvas = {
         role.scale.x = 1;
         role.scale.y = 1;
         //role.state.setAnimationByName(0, role.spineData.animations[0].name);
+        console.log("add animation " + role.spineData.animations[0].name);
         role.animation = role.spineData.animations[0].name;
         role.skeleton.setToSetupPose();
+        console.log("add " + skeletonData.name + " to stage with animation " + animation);
+
+        role.state.setAnimationByName(0, animation, true, 0);
         role.update(0);
-        console.log("add " + skeletonData.name + " to stage");
         gameCanvas.stage.addChild(role);
     },
 
