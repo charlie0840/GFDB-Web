@@ -3363,6 +3363,8 @@
              */
             this.spineData = spineData;
 
+            this.originX = 5;
+
             /**
              * A spine Skeleton object
              *
@@ -3585,6 +3587,7 @@
          * @private
          */
         Spine.prototype.createSprite = function(slot, attachment) {
+
             var descriptor = attachment.rendererObject;
             var baseTexture = descriptor.page.rendererObject;
             var spriteRect = new PIXI.Rectangle(descriptor.x,

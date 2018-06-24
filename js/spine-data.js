@@ -846,7 +846,7 @@ Girls.prototype = {
     },
 
     loadAll : function(defaultStageData){
-        console.log("load to stage");
+        console.log("load to stage ");
 
         this.loader.load((loader, resources) => {
 

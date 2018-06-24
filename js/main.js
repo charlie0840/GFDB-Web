@@ -306,16 +306,52 @@ var gameCanvas = {
     bgImage: [],
     handler: null,
     text: "",
+    scaleX: 93.75,
+    scaleY: 76.19,
     init: function () {
         gameCanvas.canvas = $('.gameCanvast');
         gameCanvas.selectBackground = $(".gameSelectBackground > select");
         gameCanvas.showFPS = $(".gameShowFPS > input");
         gameCanvas.addGrid = $(".addGrid");
         gameCanvas.addCharacters = $(".addCharacter");
+        gameCanvas.changeScale = $(".changeGridScale");
         gameCanvas.hasGrid = false;
         gameCanvas.isUpdate = true;
         gameCanvas.hasCharacter = false;
         gameCanvas.isShowFPS = true;
+
+
+
+        console.log("begin1");
+        var rangeScaleInput = document.querySelector(".changeGridScale");
+
+        rangeScaleInput.value = 99;
+
+        var listener = function() {
+            console.log("detected");
+            window.requestAnimationFrame(function() {
+                document.getElementById("rangevalueG").value = "test" + rangeScaleInput.value;
+                gameCanvas.reScale(rangeScaleInput.value/100);
+            });
+        }
+
+        rangeScaleInput.addEventListener("mousedown", function() {
+            listener();
+
+            rangeScaleInput.addEventListener("mousemove", listener);
+        });
+
+        rangeScaleInput.addEventListener("mouseup", function() {
+            rangeScaleInput.removeEventListener("mousemove", listener);
+        });
+
+        rangeScaleInput.addEventListener("keydown", listener);
+
+
+
+
+
+
 
         var stringBackground = "<option>Empty</option>";
         for (var i = 0; i < game.background.length; i++) {
@@ -354,40 +390,48 @@ var gameCanvas = {
                         this.lineTo(points[2], points[3]);
                     }
                 }
-                var line1 = new Line([105, 90, 1815, 90]);
-                var line2 = new Line([105, 1000, 1815, 990]);
-                var line3 = new Line([105, 90, 105, 990]);
-                var line4 = new Line([1815, 90, 1815, 990]);
-                var line5 = new Line([390, 90, 390, 990]);
-                var line6 = new Line([675, 90, 675, 990]);
-                var line7 = new Line([960, 90, 960, 990]);
-                var line8 = new Line([1245, 90, 1245, 990]);
-                var line9 = new Line([1530, 90, 1530, 990]);
-                var line10 = new Line([105, 390, 1815, 390]);
-                var line11 = new Line([105, 690, 1815, 690]);
 
-                gameCanvas.stage.addChild(line1);
-                gameCanvas.stage.addChild(line2);
-                gameCanvas.stage.addChild(line3);
-                gameCanvas.stage.addChild(line4);
-                gameCanvas.stage.addChild(line5);
-                gameCanvas.stage.addChild(line6);
-                gameCanvas.stage.addChild(line7);
-                gameCanvas.stage.addChild(line8);
-                gameCanvas.stage.addChild(line9);
-                gameCanvas.stage.addChild(line10);
-                gameCanvas.stage.addChild(line11);
-                gameCanvas.grid.push(line1);
-                gameCanvas.grid.push(line2);
-                gameCanvas.grid.push(line3);
-                gameCanvas.grid.push(line4);
-                gameCanvas.grid.push(line5);
-                gameCanvas.grid.push(line6);
-                gameCanvas.grid.push(line7);
-                gameCanvas.grid.push(line8);
-                gameCanvas.grid.push(line9);
-                gameCanvas.grid.push(line10);
-                gameCanvas.grid.push(line11);
+                var lineY1 = new Line([60, 60, 60, 1020]);
+                var lineY2 = new Line([285, 60, 285 *  1, 1020]);
+                var lineY3 = new Line([510, 60, 510 *  1, 1020]);
+                var lineY4 = new Line([735, 60, 735 *  1, 1020]);
+                var lineY5 = new Line([960, 60, 960 *  1, 1020]);
+                var lineY6 = new Line([1185 *  1, 60, 1185 *  1, 1020]);
+                var lineY7 = new Line([1410 *  1, 60, 1410 *  1, 1020]);
+                var lineY8 = new Line([1635 *  1, 60, 1635 *  1, 1020]);
+                var lineY9 = new Line([1860 *  1, 60, 1860 *  1, 1020]);
+
+                var lineX1 = new Line([60, 60, 1860, 60]);
+                var lineX2 = new Line([60, 380, 1860, 380]);
+                var lineX3 = new Line([60, 700, 1860, 700]);
+                var lineX4 = new Line([60, 1020, 1860, 1020]);
+
+                gameCanvas.stage.addChild(lineY1);
+                gameCanvas.stage.addChild(lineY2);
+                gameCanvas.stage.addChild(lineY3);
+                gameCanvas.stage.addChild(lineY4);
+                gameCanvas.stage.addChild(lineY5);
+                gameCanvas.stage.addChild(lineY6);
+                gameCanvas.stage.addChild(lineY7);
+                gameCanvas.stage.addChild(lineY8);
+                gameCanvas.stage.addChild(lineY9);
+                gameCanvas.stage.addChild(lineX1);
+                gameCanvas.stage.addChild(lineX2);
+                gameCanvas.stage.addChild(lineX3);
+                gameCanvas.stage.addChild(lineX4);
+                gameCanvas.grid.push(lineY1);
+                gameCanvas.grid.push(lineY2);
+                gameCanvas.grid.push(lineY3);
+                gameCanvas.grid.push(lineY4);
+                gameCanvas.grid.push(lineY5);
+                gameCanvas.grid.push(lineY6);
+                gameCanvas.grid.push(lineY7);
+                gameCanvas.grid.push(lineY8);
+                gameCanvas.grid.push(lineY9);
+                gameCanvas.grid.push(lineX1);
+                gameCanvas.grid.push(lineX2);
+                gameCanvas.grid.push(lineX3);
+                gameCanvas.grid.push(lineX4);
             }
         });
 
@@ -411,7 +455,7 @@ var gameCanvas = {
                 for (var i = 0; i < len; i++) {
 
                     var currRoleData = gameCanvas.roles[i];
-                    console.log("" + i + ": " + currRoleData.name + " with size " + gameCanvas.roles.length);
+                    //console.log("" + i + ": " + currRoleData.name + " with size " + gameCanvas.roles.length);
                     //var animName = gameCanvas.spine.spineData.animations[0].name;
                     //gameCanvas.spine.state.setAnimationByName(0, animName, true, 0);
                     //gameCanvas.spine.update(0);
@@ -427,7 +471,7 @@ var gameCanvas = {
 
                     //gameCanvas.addRole(currRoleData);
                 }
-                console.log("load all!!!!!!!!!!!!!!!!!!!");
+                //console.log("load all!!!!!!!!!!!!!!!!!!!");
                 game.girls.loadAll(gameCanvas.roles);
                 characterArray = [];
             }
@@ -465,17 +509,25 @@ var gameCanvas = {
     },
 
     loadToStage : function(defaultStageData, spineData){
-        console.log("add to stage by calling addRole");
+        //console.log("add to stage by calling addRole size " + defaultStageData.length);
+
 
         for (i in defaultStageData) {
             var role = defaultStageData[i];
             var spine = spineData[role.name][role.skin];
+
                 spine.code = role.name;
                 spine.skin = role.skin;
-                spine.x = role.x * 110;
-                spine.y = 200 + role.y * 80;
-                spine.scale = 1200;
+                //console.log("add to stage by calling addRole size " + scaleX);
+
+                spine.x = (role.x + 5.6) * gameCanvas.scaleX + 60;
+                spine.y = 1020 - (role.y + 2.1) * gameCanvas.scaleY;
+                spine.originX = role.x;
+                spine.scale = 800;
+                console.log("add originX " + spine.originX);
                 spine.animation = "wait";
+                console.log(role.name + " at " + spine.x + ", " + spine.y + " equivalent " + role.x + ", " + role.y);
+
             //gameCanvas.characters[gameCanvas.characters.length] = spine;
             gameCanvas.addRole(spine, spine.animation);
         }
@@ -495,11 +547,11 @@ var gameCanvas = {
         role.scale.x = 1;
         role.scale.y = 1;
         //role.state.setAnimationByName(0, role.spineData.animations[0].name);
-        console.log("add animation " + role.spineData.animations[0].name);
+        //console.log("add animation " + role.spineData.animations[0].name);
         role.animation = role.spineData.animations[0].name;
         role.skeleton.setToSetupPose();
-        console.log("add " + skeletonData.name + " to stage with animation " + animation);
-
+        //console.log("add " + skeletonData.name + " to stage with animation " + animation);
+        role.originX = skeletonData.originX;
         role.state.setAnimationByName(0, animation, true, 0);
         role.update(0);
         gameCanvas.stage.addChild(role);
@@ -516,6 +568,7 @@ var gameCanvas = {
         gameCanvas.renderer.render(gameCanvas.stage);
     },
 
+    //not used
     changeCharacter: function (skeletonData) {
         gameCanvas.name = skeletonData.name;
         gameCanvas.skeletonData = skeletonData;
@@ -555,6 +608,25 @@ var gameCanvas = {
                 gameCanvas.background.scale.y = gameCanvas.renderer.height / gameCanvas.bgImage[n - 1].height;
             });
         }
+    },
+
+    reScale: function (scale) {
+
+        for(var i = 0; i < this.stage.children.length; i++) {
+            var currChild = this.stage.getChildAt(i);
+            //console.log(currChild.constructor.name + " of " + currChild.name);
+            if(currChild != gameCanvas.background && currChild.constructor.name != "Spine")
+                currChild.scale.x = scale;
+            else if(currChild.constructor.name == "Spine") {
+                //spine.x = (role.x + 5.6) * scaleX + 60;
+                console.log(currChild.originX + " originX");
+                currChild.x = (currChild.originX + 5.6) * gameCanvas.scaleX * scale + 60;
+                //currChile.scale = scale;
+            }
+            
+            //currChild.scale.y = scale;
+        }
+        
     },
 
 };
